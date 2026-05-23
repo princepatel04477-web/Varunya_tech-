@@ -1,6 +1,7 @@
-import { useEffect, useRef } from 'react';
-import { gsap } from 'gsap';
+import { useEffect, useRef, useState } from 'react';
 import ParticleField from '@/components/ParticleField';
+import anime from '@/lib/anime-utils';
+import { useMagneticAnime } from '@/hooks/useMagneticAnime';
 
 const metrics = [
   'AI Automation',
@@ -12,11 +13,19 @@ const metrics = [
 
 export default function Hero() {
   const sectionRef = useRef<HTMLElement>(null);
-  const titleRef = useRef<HTMLDivElement>(null);
-  const subtitleRef = useRef<HTMLDivElement>(null);
-  const descRef = useRef<HTMLParagraphElement>(null);
-  const metricsRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const primaryCtaRef = useMagneticAnime<HTMLAnchorElement>(0.3);
+
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   // Neural glow orb canvas
   useEffect(() => {
@@ -103,35 +112,50 @@ export default function Hero() {
     };
   }, []);
 
-  // GSAP entrance animations
+  // Anime.js entrance animations
   useEffect(() => {
-    const tl = gsap.timeline({ delay: 0.3 });
+    const tl = anime.timeline({ easing: 'easeOutExpo', duration: 800 });
 
-    tl.fromTo(
-      titleRef.current,
-      { y: 100, opacity: 0 },
-      { y: 0, opacity: 1, duration: 1.2, ease: 'power4.out' }
-    )
-      .fromTo(
-        subtitleRef.current,
-        { y: 60, opacity: 0 },
-        { y: 0, opacity: 1, duration: 1, ease: 'power4.out' },
-        '-=0.7'
-      )
-      .fromTo(
-        descRef.current,
-        { y: 40, opacity: 0 },
-        { y: 0, opacity: 1, duration: 0.8, ease: 'power3.out' },
-        '-=0.5'
-      )
-      .fromTo(
-        metricsRef.current?.children || [],
-        { y: 30, opacity: 0 },
-        { y: 0, opacity: 1, duration: 0.6, stagger: 0.08, ease: 'power3.out' },
-        '-=0.3'
-      );
+    tl
+      .add({
+        targets: '.hero-eyebrow',
+        opacity: [0, 1],
+        translateY: [20, 0],
+        duration: 500,
+      })
+      .add({
+        targets: '.hero-headline .word',
+        opacity: [0, 1],
+        translateY: [60, 0],
+        rotateX: [90, 0],
+        delay: anime.stagger(80),
+        duration: 700,
+      }, '-=200')
+      .add({
+        targets: '.hero-subtext',
+        opacity: [0, 1],
+        translateY: [20, 0],
+        duration: 600,
+      }, '-=400')
+      .add({
+        targets: '.hero-cta-primary, .hero-cta-secondary',
+        opacity: [0, 1],
+        translateY: [20, 0],
+        scale: [0.95, 1],
+        delay: anime.stagger(100),
+        duration: 500,
+      }, '-=300')
+      .add({
+        targets: '.hero-metric',
+        opacity: [0, 1],
+        translateY: [20, 0],
+        delay: anime.stagger(60),
+        duration: 500,
+      }, '-=300');
 
-    return () => { tl.kill(); };
+    return () => {
+      tl.revert();
+    };
   }, []);
 
   return (
@@ -143,51 +167,99 @@ export default function Hero() {
       {/* Three.js Particle Background */}
       <ParticleField />
 
-      {/* Neural Glow Orb Canvas */}
-      <canvas
-        ref={canvasRef}
-        style={{
-          position: 'absolute',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          width: '800px',
-          height: '800px',
-          zIndex: 2,
-          pointerEvents: 'none',
-        }}
-      />
+      {/* Neural Glow Orb Canvas (Disabled on mobile to ensure zero overflow and smooth performance) */}
+      {!isMobile && (
+        <canvas
+          ref={canvasRef}
+          style={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            width: '800px',
+            height: '800px',
+            zIndex: 2,
+            pointerEvents: 'none',
+          }}
+        />
+      )}
 
       {/* Content */}
-      <div className="relative z-10 max-w-[1400px] mx-auto px-6 lg:px-10 w-full">
+      <div className="relative z-10 max-w-[1400px] mx-auto px-4 md:px-6 lg:px-10 w-full">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center min-h-screen py-32">
           {/* Left: Typography */}
           <div className="flex flex-col justify-center">
-            <div ref={titleRef} className="mb-4">
-              <h1 className="font-display text-[clamp(3.5rem,12vw,10rem)] font-light leading-[0.9] tracking-[-0.03em] text-soft-white opacity-90">
-                VARUNYA
-              </h1>
-            </div>
-            <div ref={subtitleRef} className="mb-8">
-              <h2 className="font-display text-[clamp(2rem,6vw,5rem)] font-bold leading-[1] tracking-[-0.02em] text-soft-white">
-                TECHNOLOGIES
-              </h2>
+            {/* Hero Eyebrow Tagline */}
+            <div className="hero-eyebrow mb-4 text-xs font-semibold tracking-[0.25em] uppercase text-amber opacity-0">
+              Intelligent Digital Futures
             </div>
 
-            <p
-              ref={descRef}
-              className="text-muted-foreground text-base lg:text-lg leading-relaxed max-w-lg mb-10"
-            >
-              Varunya Technologies creates next-generation AI systems, scalable SaaS platforms,
-              intelligent automation tools, and immersive digital experiences designed for the future.
+            {/* Hero Headline with Staggered Word Reveals */}
+            <h1 className="hero-headline font-display text-[clamp(2.3rem,6.5vw,5.2rem)] leading-[0.95] tracking-[-0.03em] text-soft-white flex flex-col gap-1 mb-8 overflow-hidden py-1">
+              <span className="block overflow-hidden">
+                {"We Build Digital".split(' ').map((word, i) => (
+                  <span key={i} className="inline-block overflow-hidden mr-[0.2em] pb-[0.05em]">
+                    <span className="word inline-block origin-bottom-left opacity-0" style={{ transformStyle: 'preserve-3d' }}>
+                      {word}
+                    </span>
+                  </span>
+                ))}
+              </span>
+              <span className="block overflow-hidden font-bold">
+                {"Experiences That Convert".split(' ').map((word, i) => (
+                  <span key={i} className="inline-block overflow-hidden mr-[0.2em] pb-[0.05em]">
+                    <span className="word inline-block origin-bottom-left opacity-0" style={{ transformStyle: 'preserve-3d' }}>
+                      {word}
+                    </span>
+                  </span>
+                ))}
+              </span>
+            </h1>
+
+            {/* Hero Subtext */}
+            <p className="hero-subtext text-muted-foreground text-base lg:text-lg leading-relaxed max-w-lg mb-8 opacity-0">
+              From immersive 3D landing pages to AI-powered Micro SaaS products — Varunya Technologies turns ambitious ideas into revenue-generating digital products. Fast.
             </p>
 
+            {/* CTA Buttons (Stack vertically on screens < 480px, horizontal sm+) */}
+            <div className="flex flex-col sm:flex-row gap-4 mb-10 w-full sm:w-auto">
+              <a
+                ref={primaryCtaRef}
+                href="#projects"
+                className="hero-cta-primary inline-flex items-center justify-center gap-3 py-3 px-6 bg-gradient-to-r from-amber to-amber/80 text-black hover:from-amber/90 hover:to-amber/70 transition-all duration-300 rounded-xl font-display text-sm font-semibold tracking-wider uppercase active:scale-[0.98] shadow-[0_0_20px_rgba(255,170,51,0.25)] hover:shadow-[0_0_30px_rgba(255,170,51,0.4)] w-full sm:w-auto opacity-0"
+                data-cursor-hover
+                onMouseEnter={(e) => anime({
+                  targets: e.currentTarget,
+                  scale: 1.04,
+                  duration: 200,
+                  easing: 'easeOutQuad',
+                })}
+                onMouseLeave={(e) => anime({
+                  targets: e.currentTarget,
+                  scale: 1.0,
+                  duration: 200,
+                  easing: 'easeOutQuad',
+                })}
+              >
+                See Our Work  →
+              </a>
+              <a
+                href="https://calendly.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hero-cta-secondary inline-flex items-center justify-center gap-3 py-3 px-6 bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 text-soft-white transition-all duration-300 rounded-xl font-display text-sm tracking-wider uppercase active:scale-[0.98] w-full sm:w-auto opacity-0"
+                data-cursor-hover
+              >
+                Book a Free Strategy Call
+              </a>
+            </div>
+
             {/* Floating Metrics */}
-            <div ref={metricsRef} className="flex flex-wrap gap-3">
+            <div className="flex flex-wrap gap-3">
               {metrics.map((metric) => (
                 <div
                   key={metric}
-                  className="glass-panel px-4 py-2 rounded-full text-xs tracking-wider uppercase text-muted-foreground hover:text-amber hover:border-amber/20 transition-all duration-300"
+                  className="hero-metric glass-panel px-4 py-2 rounded-full text-xs tracking-wider uppercase text-muted-foreground hover:text-amber hover:border-amber/20 transition-all duration-300 opacity-0"
                   data-cursor-hover
                 >
                   {metric}

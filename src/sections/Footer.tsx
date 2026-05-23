@@ -12,10 +12,9 @@ export default function Footer() {
   };
 
   const navLinks = [
-    { label: 'Systems', href: '#services' },
-    { label: 'Products', href: '#products' },
-    { label: 'Projects', href: '#projects' },
-    { label: 'Team', href: '#team' },
+    { label: 'Home', href: '#hero' },
+    { label: 'Work', href: '#projects' },
+    { label: 'Services', href: '#services' },
     { label: 'Contact', href: '#contact' },
   ];
 
@@ -43,15 +42,6 @@ export default function Footer() {
       ),
     },
     {
-      label: 'X',
-      href: '#',
-      icon: (
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M4 4l6.5 8L4 20h2l5.5-6.8L16 20h4l-6.8-8.5L20 4h-2l-5.2 6.5L8 4H4z" />
-        </svg>
-      ),
-    },
-    {
       label: 'GitHub',
       href: '#',
       icon: (
@@ -63,27 +53,32 @@ export default function Footer() {
   ];
 
   return (
-    <footer className="relative py-16 lg:py-20 border-t border-white/5">
-      <div className="max-w-[1400px] mx-auto px-6 lg:px-10">
+    <footer className="relative py-16 lg:py-20 border-t border-white/5 bg-void">
+      <div className="max-w-[1400px] mx-auto px-4 md:px-6 lg:px-10">
         <div className="flex flex-col lg:flex-row items-center justify-between gap-10">
-          {/* Logo */}
-          <a
-            href="#"
-            onClick={(e) => handleNav(e, '#')}
-            className="font-display text-sm tracking-[0.3em] uppercase text-soft-white/60 hover:text-amber transition-colors duration-300"
-            data-cursor-hover
-          >
-            Varunya Technologies
-          </a>
+          {/* Logo Name & Tagline */}
+          <div className="flex flex-col items-center lg:items-start text-center lg:text-left">
+            <a
+              href="#"
+              onClick={(e) => handleNav(e, '#')}
+              className="font-display text-base tracking-[0.25em] uppercase text-soft-white hover:text-amber transition-colors duration-300 mb-2 font-bold"
+              data-cursor-hover
+            >
+              Varunya Technologies
+            </a>
+            <span className="text-[10px] tracking-[0.15em] uppercase text-muted-foreground font-mono">
+              Intelligent Digital Futures
+            </span>
+          </div>
 
-          {/* Nav Links */}
+          {/* Quick Links */}
           <nav className="flex flex-wrap items-center justify-center gap-6 lg:gap-8">
             {navLinks.map((link) => (
               <a
                 key={link.label}
                 href={link.href}
                 onClick={(e) => handleNav(e, link.href)}
-                className="text-xs tracking-[0.15em] uppercase text-muted-foreground hover:text-soft-white transition-colors duration-300"
+                className="text-xs tracking-[0.15em] uppercase text-muted-foreground hover:text-soft-white transition-colors duration-300 font-mono"
                 data-cursor-hover
               >
                 {link.label}
@@ -97,7 +92,7 @@ export default function Footer() {
               <a
                 key={social.label}
                 href={social.href}
-                className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center text-muted-foreground hover:text-amber hover:border-amber/30 transition-all duration-300"
+                className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center text-muted-foreground hover:text-[#3B82F6] hover:border-[#3B82F6]/30 transition-all duration-300"
                 data-cursor-hover
                 aria-label={social.label}
               >
@@ -109,11 +104,11 @@ export default function Footer() {
 
         {/* Bottom bar */}
         <div className="mt-12 pt-8 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-[11px] text-muted-foreground font-mono">
-            &copy; {new Date().getFullYear()} Varunya Technologies. All rights reserved.
+          <p className="text-[10px] text-muted-foreground font-mono">
+            &copy; 2025 Varunya Technologies. All rights reserved.
           </p>
-          <p className="text-[11px] text-muted-foreground/60 font-mono">
-            Engineered with intelligence. Built for the future.
+          <p className="text-[10px] text-muted-foreground/60 font-mono">
+            Made with ☕ in Surat, India
           </p>
         </div>
       </div>

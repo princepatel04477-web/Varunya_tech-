@@ -11,6 +11,8 @@ import {
   Building2,
   Sparkles,
 } from 'lucide-react';
+import anime, { staggerReveal } from '@/lib/anime-utils';
+import ServiceGridLines from '@/components/ServiceGridLines';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -87,29 +89,52 @@ export default function Services() {
           },
         }
       );
-
-      const cards = cardsRef.current?.children;
-      if (cards) {
-        gsap.fromTo(
-          cards,
-          { y: 60, opacity: 0 },
-          {
-            y: 0,
-            opacity: 1,
-            duration: 0.8,
-            stagger: 0.1,
-            ease: 'power3.out',
-            scrollTrigger: {
-              trigger: cardsRef.current,
-              start: 'top 80%',
-              toggleActions: 'play none none none',
-            },
-          }
-        );
-      }
     }, sectionRef);
 
     return () => ctx.revert();
+  }, []);
+
+  // IntersectionObserver to animate grid lines and service cards on viewport entry
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            // Animate decorative SVG lines
+            anime({
+              targets: '.grid-line',
+              strokeDashoffset: [anime.setDashoffset, 0],
+              duration: 1400,
+              delay: anime.stagger(200),
+              easing: 'easeInOutSine',
+              complete: () => {
+                // Trigger cards stagger once lines are drawn
+                staggerReveal('.service-card');
+              },
+            });
+
+            // Animate intersection dots
+            anime({
+              targets: '.grid-dot',
+              opacity: [0, 1],
+              scale: [0, 1],
+              delay: anime.stagger(100, { start: 600 }),
+              duration: 400,
+              easing: 'easeOutBack',
+            });
+
+            observer.disconnect();
+          }
+        });
+      },
+      { threshold: 0.2 }
+    );
+
+    if (sectionRef.current) {
+      observer.observe(sectionRef.current);
+    }
+
+    return () => observer.disconnect();
   }, []);
 
   return (
@@ -130,7 +155,7 @@ export default function Services() {
         }}
       />
 
-      <div className="relative z-10 max-w-[1400px] mx-auto px-6 lg:px-10">
+      <div className="relative z-10 max-w-[1400px] mx-auto px-4 md:px-6 lg:px-10">
         {/* Section Header */}
         <div ref={headingRef} className="mb-20">
           <div className="flex items-center gap-3 mb-6">
@@ -151,15 +176,18 @@ export default function Services() {
         {/* Bento Grid */}
         <div
           ref={cardsRef}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"
+          className="relative grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"
         >
+          {/* SVG Grid Lines Backdrop */}
+          <ServiceGridLines />
+
           {services.map((service, index) => {
             const Icon = service.icon;
             const isLarge = index === 0 || index === 3;
             return (
               <div
                 key={service.title}
-                className={`group relative glass-panel rounded-2xl p-6 lg:p-8 hover-lift cursor-pointer transition-all duration-500 ${
+                className={`service-card group relative z-10 glass-panel rounded-2xl p-6 lg:p-8 hover-lift cursor-pointer transition-all duration-500 opacity-0 ${
                   isLarge ? 'lg:col-span-2' : ''
                 }`}
                 data-cursor-hover

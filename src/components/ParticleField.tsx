@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 
 interface ParticleFieldProps {
@@ -13,7 +13,31 @@ export default function ParticleField({ className }: ParticleFieldProps) {
   const frameRef = useRef<number>(0);
   const mouseRef = useRef({ x: 0, y: 0, targetX: 0, targetY: 0 });
 
+  const [isMobile, setIsMobile] = useState(false);
+  const [scrollY, setScrollY] = useState(0);
+
   useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+
+    const handleScroll = () => {
+      setScrollY(window.scrollY);
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+
+    return () => {
+      window.removeEventListener('resize', checkMobile);
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
+
+  useEffect(() => {
+    // Disable WebGL animations completely on mobile to maximize battery and performance
+    if (isMobile) return;
+
     const container = containerRef.current;
     if (!container) return;
 
@@ -113,7 +137,7 @@ export default function ParticleField({ className }: ParticleFieldProps) {
     pointLight.position.set(0, 0, 10);
     scene.add(pointLight);
 
-    // Animation
+    // Animation loop
     const onMouseMove = (e: MouseEvent) => {
       mouseRef.current.targetX = (e.clientX / window.innerWidth) * 2 - 1;
       mouseRef.current.targetY = -(e.clientY / window.innerHeight) * 2 + 1;
@@ -166,7 +190,27 @@ export default function ParticleField({ className }: ParticleFieldProps) {
         container.removeChild(renderer.domElement);
       }
     };
-  }, []);
+  }, [isMobile]);
+
+  if (isMobile) {
+    return (
+      <div
+        className={className}
+        style={{
+          position: 'absolute',
+          inset: 0,
+          zIndex: 1,
+          overflow: 'hidden',
+          backgroundImage: 'url(/canvas-fallback.png)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          opacity: 0.3,
+          transform: `translateY(${scrollY * 0.15}px)`,
+          transition: 'transform 0.1s ease-out',
+        }}
+      />
+    );
+  }
 
   return (
     <div

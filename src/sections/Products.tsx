@@ -1,203 +1,360 @@
-import { useEffect, useRef } from 'react';
-import { gsap } from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import {
-  PenTool,
-  Workflow,
-  MessageSquare,
-  BarChart3,
-  GitBranch,
-  Lightbulb,
-} from 'lucide-react';
+'use client';
 
-gsap.registerPlugin(ScrollTrigger);
+import { useEffect, useRef } from 'react';
+import {
+  Bot,
+  Workflow,
+  Sparkles,
+  MessageSquare,
+  Cpu,
+} from 'lucide-react';
+import anime from '@/lib/anime-utils';
 
 const products = [
   {
-    icon: PenTool,
-    title: 'AI Content Generator',
-    tag: 'GENERATIVE AI',
-    description: 'Create high-quality content, copy, and creative assets with advanced language models.',
-    metric: '10M+ words generated',
+    index: '01',
+    icon: Bot,
+    name: 'AI Content Agent',
+    description: 'Advanced autonomous copywriter that generates conversion-optimized copy, blog posts, and multi-channel creative assets in seconds.',
+    stat: '10M+ WORDS GENERATED',
+    category: 'GENERATIVE AI',
+    isFlagship: false,
+    isCustom: false,
   },
   {
+    index: '02',
     icon: Workflow,
-    title: 'AI Automation Suite',
-    tag: 'AUTOMATION',
-    description: 'End-to-end workflow automation with intelligent decision-making capabilities.',
-    metric: '500+ workflows automated',
+    name: 'AI Automation Engine',
+    description: 'Intelligent workflow orchestration that maps your business processes and automates operations with zero human intervention.',
+    stat: '500+ WORKFLOWS LIVE',
+    category: 'AUTOMATION',
+    isFlagship: false,
+    isCustom: false,
   },
   {
+    index: '03',
+    icon: Sparkles,
+    name: 'Varunya Core Flagship',
+    description: 'Our enterprise intelligence center. Connects all department nodes, aggregates data sources, and runs real-time deep learning analytics.',
+    stat: 'ENTERPRISE GRADE',
+    category: 'ORCHESTRATION',
+    isFlagship: true,
+    isCustom: false,
+    statsPanel: [
+      { value: '500+', label: 'WORKFLOWS LIVE' },
+      { value: '3.2x', label: 'AVG TIME SAVED' },
+      { value: '14d', label: 'TO DEPLOY' },
+    ],
+  },
+  {
+    index: '04',
     icon: MessageSquare,
-    title: 'AI Customer Assistant',
-    tag: 'CONVERSATIONAL AI',
-    description: '24/7 intelligent customer support with natural language understanding.',
-    metric: '99.7% resolution rate',
+    name: 'AI Customer Assistant',
+    description: 'Conversational support bots with contextual memory and natural language processing that reduce ticket volume by 60%.',
+    stat: '99.7% ACCURACY RATE',
+    category: 'CONVERSATIONAL',
+    isFlagship: false,
+    isCustom: false,
   },
   {
-    icon: BarChart3,
-    title: 'AI Analytics Engine',
-    tag: 'ANALYTICS',
-    description: 'Real-time predictive analytics with neural-powered insights and forecasting.',
-    metric: '50+ data sources',
-  },
-  {
-    icon: GitBranch,
-    title: 'AI Workflow System',
-    tag: 'ORCHESTRATION',
-    description: 'Visual workflow builder with AI-powered optimization and monitoring.',
-    metric: '1M+ tasks processed',
-  },
-  {
-    icon: Lightbulb,
-    title: 'AI Business Intelligence',
-    tag: 'INTELLIGENCE',
-    description: 'Strategic AI insights for data-driven decision making and growth.',
-    metric: '200+ enterprises served',
+    index: '05',
+    icon: Cpu,
+    name: 'Custom AI Architect',
+    description: 'Bespoke machine learning architectures engineered specifically to fit your product\'s unique data inputs and growth strategy.',
+    stat: 'TAILORED BUILDS',
+    category: 'CUSTOM DEPLOY',
+    isFlagship: false,
+    isCustom: true, // Uses green breakaway styling
   },
 ];
 
-export default function Products() {
-  const sectionRef = useRef<HTMLElement>(null);
-  const headingRef = useRef<HTMLDivElement>(null);
-  const trackRef = useRef<HTMLDivElement>(null);
+interface ProductCellProps {
+  product: typeof products[0];
+}
 
-  useEffect(() => {
-    const ctx = gsap.context(() => {
-      gsap.fromTo(
-        headingRef.current,
-        { y: 80, opacity: 0 },
-        {
-          y: 0,
-          opacity: 1,
-          duration: 1,
-          ease: 'power4.out',
-          scrollTrigger: {
-            trigger: headingRef.current,
-            start: 'top 85%',
-            toggleActions: 'play none none none',
-          },
-        }
-      );
+function ProductCell({ product }: ProductCellProps) {
+  const barRef = useRef<HTMLDivElement>(null);
 
-      // Horizontal scroll
-      const track = trackRef.current;
-      if (track) {
-        const getScrollDistance = () =>
-          Math.max((track.scrollWidth - window.innerWidth + 200) * 1.35, 0);
+  const Icon = product.icon;
+  const isCustom = product.isCustom;
+  const isFlagship = product.isFlagship;
 
-        gsap.to(track, {
-          x: () => -getScrollDistance(),
-          ease: 'none',
-          scrollTrigger: {
-            trigger: track,
-            start: 'top top',
-            end: () => `+=${getScrollDistance()}`,
-            scrub: 0.8,
-            pin: true,
-            anticipatePin: 1,
-            invalidateOnRefresh: true,
-          },
-        });
+  const accentColor = isCustom ? '#10B981' : '#3B82F6';
+  const iconBorderColor = isCustom ? '#10B981' : '#1E3A5F';
+  const topIndexColor = '#1E3A5F';
+  const dotColor = isCustom ? '#10B981' : '#3B82F6';
+  const statColor = isCustom ? '#10B981' : '#3B82F6';
+  const barColor = isCustom ? '#10B981' : '#3B82F6';
 
-        // Entrance animation for cards
-        const cards = track.querySelectorAll('.product-card');
-        gsap.fromTo(
-          cards,
-          { y: 40, opacity: 0 },
-          {
-            y: 0,
-            opacity: 1,
-            duration: 0.6,
-            stagger: 0.1,
-            ease: 'power3.out',
-            scrollTrigger: {
-              trigger: sectionRef.current,
-              start: 'top 80%',
-              toggleActions: 'play none none none',
-            },
-          }
-        );
-      }
-    }, sectionRef);
+  const handleMouseEnter = () => {
+    if (barRef.current) {
+      anime({
+        targets: barRef.current,
+        width: '100%',
+        duration: 350,
+        easing: 'easeOutExpo',
+      });
+    }
+  };
 
-    return () => ctx.revert();
-  }, []);
+  const handleMouseLeave = () => {
+    if (barRef.current) {
+      anime({
+        targets: barRef.current,
+        width: '0%',
+        duration: 200,
+        easing: 'easeInQuad',
+      });
+    }
+  };
 
-  return (
-    <section ref={sectionRef} id="products" className="relative overflow-hidden">
-      <div className="relative z-10 max-w-[1400px] mx-auto px-6 lg:px-10 pt-32 lg:pt-40">
-        {/* Section Header */}
-        <div ref={headingRef} className="mb-16">
-          <div className="flex items-center gap-3 mb-6">
-            <div className="h-px w-12 bg-neon-violet/50" />
-            <span className="text-xs tracking-[0.3em] uppercase text-neon-violet font-mono">
-              AI Products
-            </span>
+  if (isFlagship) {
+    return (
+      <div
+        className="product-cell group relative flex flex-col lg:flex-row items-stretch overflow-hidden bg-[#0D1520] hover:bg-[#111D2E] transition-colors duration-300 md:col-span-2"
+        style={{
+          opacity: 0,
+          transform: 'translateY(32px)',
+          gridColumn: '1 / -1',
+        }}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+      >
+        {/* Left Content Area */}
+        <div className="flex-1 p-6 lg:p-8 flex flex-col justify-between relative">
+          <div>
+            {/* Top Row */}
+            <div className="flex justify-between items-center mb-6">
+              <span className="font-mono text-sm font-bold tracking-wider" style={{ color: topIndexColor }}>
+                {product.index}
+              </span>
+              <div
+                className="w-[6px] h-[6px] rounded-full shadow-[0_0_10px_rgba(59,130,246,0.5)]"
+                style={{ backgroundColor: dotColor }}
+              />
+            </div>
+
+            {/* Icon Wrapper */}
+            <div
+              className="w-11 h-11 flex items-center justify-center rounded-[10px] border mb-5"
+              style={{
+                borderColor: iconBorderColor,
+                backgroundColor: '#0A1628',
+              }}
+            >
+              <Icon className="w-5 h-5" style={{ color: accentColor }} />
+            </div>
+
+            {/* Title */}
+            <h3 className="text-[17px] font-semibold text-[#E2E8F0] tracking-tight mb-3">
+              {product.name}
+            </h3>
+
+            {/* Description */}
+            <p className="text-[13px] text-[#475569] leading-[1.65] max-w-2xl mb-8">
+              {product.description}
+            </p>
           </div>
-          <h2 className="font-display text-[clamp(2.5rem,5vw,5rem)] font-bold leading-[1] tracking-[-0.02em] text-soft-white mb-6">
-            AI PRODUCT SUITE
-          </h2>
-          <p className="text-muted-foreground text-lg max-w-xl">
-            A comprehensive suite of AI-powered products designed to transform
-            how businesses operate and grow.
-          </p>
+
+          {/* Divider & Footer */}
+          <div>
+            <div className="h-px w-full bg-[#1E293B] mb-5" />
+            <div className="flex justify-between items-center">
+              <span className="font-mono text-xs tracking-wider font-semibold" style={{ color: statColor }}>
+                {product.stat}
+              </span>
+              <span
+                className="text-[10px] font-semibold uppercase tracking-[0.08em] rounded-[4px]"
+                style={{
+                  padding: '3px 8px',
+                  backgroundColor: '#0A1628',
+                  border: `1px solid ${iconBorderColor}`,
+                  color: isCustom ? '#10B981' : '#1E3A5F',
+                }}
+              >
+                {product.category}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* Right Mini-Stats Panel */}
+        <div className="w-full lg:w-[200px] border-t lg:border-t-0 lg:border-l border-[#1E293B] p-6 lg:p-8 flex flex-col justify-center gap-4 bg-[#090F17] hover:bg-[#0D1520] transition-colors duration-300">
+          {product.statsPanel?.map((stat, idx) => (
+            <div
+              key={idx}
+              className="p-[10px] px-[12px] border border-[#1E293B] rounded-lg transition-transform duration-300 hover:scale-[1.03]"
+              style={{ backgroundColor: '#0A1628' }}
+            >
+              <div className="text-[18px] font-semibold text-[#E2E8F0] mb-1">
+                {stat.value}
+              </div>
+              <div className="text-[10px] text-[#475569] font-mono tracking-[0.06em] uppercase">
+                {stat.label}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Hover Bottom Edge Bar */}
+        <div
+          ref={barRef}
+          className="absolute bottom-0 left-0 h-[2px] w-0"
+          style={{ backgroundColor: barColor }}
+        />
+      </div>
+    );
+  }
+
+  // Standard Column Cell Layout
+  return (
+    <div
+      className="product-cell group relative flex flex-col justify-between p-6 lg:p-8 overflow-hidden bg-[#0D1520] hover:bg-[#111D2E] transition-colors duration-300"
+      style={{
+        opacity: 0,
+        transform: 'translateY(32px)',
+      }}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+    >
+      <div>
+        {/* Top Row */}
+        <div className="flex justify-between items-center mb-6">
+          <span className="font-mono text-sm font-bold tracking-wider" style={{ color: topIndexColor }}>
+            {product.index}
+          </span>
+          <div
+            className="w-[6px] h-[6px] rounded-full"
+            style={{
+              backgroundColor: dotColor,
+              boxShadow: isCustom ? '0 0 10px rgba(16,185,129,0.5)' : '0 0 10px rgba(59,130,246,0.5)',
+            }}
+          />
+        </div>
+
+        {/* Icon Wrapper */}
+        <div
+          className="w-11 h-11 flex items-center justify-center rounded-[10px] border mb-5"
+          style={{
+            borderColor: iconBorderColor,
+            backgroundColor: '#0A1628',
+          }}
+        >
+          <Icon className="w-5 h-5" style={{ color: accentColor }} />
+        </div>
+
+        {/* Title */}
+        <h3 className="text-[17px] font-semibold text-[#E2E8F0] tracking-tight mb-3">
+          {product.name}
+        </h3>
+
+        {/* Description */}
+        <p className="text-[13px] text-[#475569] leading-[1.65] mb-8">
+          {product.description}
+        </p>
+      </div>
+
+      {/* Divider & Footer */}
+      <div>
+        <div className="h-px w-full bg-[#1E293B] mb-5" />
+        <div className="flex justify-between items-center">
+          <span className="font-mono text-xs tracking-wider font-semibold" style={{ color: statColor }}>
+            {product.stat}
+          </span>
+          <span
+            className="text-[10px] font-semibold uppercase tracking-[0.08em] rounded-[4px]"
+            style={{
+              padding: '3px 8px',
+              backgroundColor: '#0A1628',
+              border: `1px solid ${iconBorderColor}`,
+              color: isCustom ? '#10B981' : '#1E3A5F',
+            }}
+          >
+            {product.category}
+          </span>
         </div>
       </div>
 
-      {/* Horizontal Track */}
+      {/* Hover Bottom Edge Bar */}
       <div
-        ref={trackRef}
-        className="flex gap-6 pl-6 lg:pl-10 pr-[50vw] py-8"
-        style={{ width: 'max-content' }}
-      >
-        {products.map((product, index) => {
-          const Icon = product.icon;
-          const isEven = index % 2 === 0;
-          return (
-            <div
-              key={product.title}
-              className="product-card group relative w-[380px] lg:w-[420px] flex-shrink-0 glass-panel rounded-3xl p-8 hover-lift"
-              style={{
-                marginTop: isEven ? '0' : '40px',
-              }}
-              data-cursor-hover
-            >
-              {/* Subtle gradient on hover */}
-              <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-neon-violet/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+        ref={barRef}
+        className="absolute bottom-0 left-0 h-[2px] w-0"
+        style={{ backgroundColor: barColor }}
+      />
+    </div>
+  );
+}
 
-              <div className="relative z-10">
-                {/* Icon */}
-                <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-white/10 to-white/5 flex items-center justify-center mb-6 group-hover:from-neon-violet/20 group-hover:to-neon-violet/5 transition-all duration-500">
-                  <Icon className="w-6 h-6 text-muted-foreground group-hover:text-neon-violet transition-colors duration-500" />
-                </div>
+export default function Products() {
+  const sectionRef = useRef<HTMLElement>(null);
+  const gridRef = useRef<HTMLDivElement>(null);
 
-                {/* Tag */}
-                <div className="text-[10px] tracking-[0.3em] uppercase text-neon-violet font-mono mb-3">
-                  {product.tag}
-                </div>
+  // IntersectionObserver to stagger cell reveals on viewport entry
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            anime({
+              targets: '.product-cell',
+              opacity: [0, 1],
+              translateY: [32, 0],
+              delay: anime.stagger(80),
+              duration: 600,
+              easing: 'easeOutExpo',
+            });
+            observer.disconnect();
+          }
+        });
+      },
+      { threshold: 0.15 }
+    );
 
-                {/* Title */}
-                <h3 className="font-display text-2xl font-semibold text-soft-white mb-4 tracking-tight">
-                  {product.title}
-                </h3>
+    if (gridRef.current) {
+      observer.observe(gridRef.current);
+    }
 
-                {/* Description */}
-                <p className="text-sm text-muted-foreground leading-relaxed mb-6">
-                  {product.description}
-                </p>
+    return () => observer.disconnect();
+  }, []);
 
-                {/* Metric */}
-                <div className="flex items-center gap-2 pt-4 border-t border-white/5">
-                  <div className="w-1.5 h-1.5 rounded-full bg-neon-violet animate-pulse-glow" />
-                  <span className="text-xs text-muted-foreground font-mono">
-                    {product.metric}
-                  </span>
-                </div>
-              </div>
-            </div>
-          );
-        })}
+  return (
+    <section
+      ref={sectionRef}
+      id="products"
+      className="relative py-32 lg:py-40 overflow-hidden"
+      style={{ backgroundColor: '#080D14' }}
+    >
+      {/* Subtle background noise */}
+      <div className="absolute inset-0 opacity-[0.015] bg-[radial-gradient(#ffffff_1px,transparent_1px)] [background-size:16px_16px] pointer-events-none" />
+
+      <div className="relative z-10 max-w-[1200px] mx-auto px-4 md:px-6 lg:px-10">
+        {/* SECTION HEADER */}
+        <div className="mb-20 text-center flex flex-col items-center">
+          <span className="text-[11px] tracking-[0.18em] uppercase text-[#3B82F6] font-mono font-semibold mb-4">
+            AI Products Suite
+          </span>
+          <h2 className="text-[32px] font-semibold text-[#F1F5F9] mb-6">
+            Intelligence, built to ship
+          </h2>
+          <p className="text-[#64748B] text-[14px] leading-relaxed max-w-[420px]">
+            Four production-ready AI products. Plug in, customize, and launch under your brand in days — not months.
+          </p>
+        </div>
+
+        {/* BORDERED GRID CONTAINER */}
+        <div
+          ref={gridRef}
+          className="grid grid-cols-1 md:grid-cols-2 rounded-xl overflow-hidden border border-[#1E293B]"
+          style={{
+            display: 'grid',
+            gap: '2px',
+            backgroundColor: '#1E293B',
+          }}
+        >
+          {products.map((product) => (
+            <ProductCell key={product.name} product={product} />
+          ))}
+        </div>
       </div>
     </section>
   );

@@ -209,6 +209,8 @@ export default function Team() {
                   alt={founder.name}
                   className="w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-105"
                   loading="lazy"
+                  width={400}
+                  height={400}
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-void via-void/20 to-transparent" />
 

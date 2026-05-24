@@ -121,7 +121,7 @@ function ProductCell({ product }: ProductCellProps) {
         onMouseLeave={handleMouseLeave}
       >
         {/* Left Content Area */}
-        <div className="flex-1 p-6 lg:p-8 flex flex-col justify-between relative">
+        <div className="flex-1 p-5 lg:p-8 flex flex-col justify-between relative">
           <div>
             {/* Top Row */}
             <div className="flex justify-between items-center mb-6">
@@ -151,7 +151,7 @@ function ProductCell({ product }: ProductCellProps) {
             </h3>
 
             {/* Description */}
-            <p className="text-[13px] text-[#475569] leading-[1.65] max-w-2xl mb-8">
+            <p className="text-[14px] text-[#475569] leading-[1.65] max-w-2xl mb-8">
               {product.description}
             </p>
           </div>
@@ -179,7 +179,7 @@ function ProductCell({ product }: ProductCellProps) {
         </div>
 
         {/* Right Mini-Stats Panel */}
-        <div className="w-full lg:w-[200px] border-t lg:border-t-0 lg:border-l border-[#1E293B] p-6 lg:p-8 flex flex-col justify-center gap-4 bg-[#090F17] hover:bg-[#0D1520] transition-colors duration-300">
+        <div className="w-full lg:w-[200px] border-t lg:border-t-0 lg:border-l border-[#1E293B] p-5 lg:p-8 flex flex-col justify-center gap-4 bg-[#090F17] hover:bg-[#0D1520] transition-colors duration-300">
           {product.statsPanel?.map((stat, idx) => (
             <div
               key={idx}
@@ -209,7 +209,7 @@ function ProductCell({ product }: ProductCellProps) {
   // Standard Column Cell Layout
   return (
     <div
-      className="product-cell group relative flex flex-col justify-between p-6 lg:p-8 overflow-hidden bg-[#0D1520] hover:bg-[#111D2E] transition-colors duration-300"
+      className="product-cell group relative flex flex-col justify-between p-5 lg:p-8 overflow-hidden bg-[#0D1520] hover:bg-[#111D2E] transition-colors duration-300"
       style={{
         opacity: 0,
         transform: 'translateY(32px)',
@@ -249,7 +249,7 @@ function ProductCell({ product }: ProductCellProps) {
         </h3>
 
         {/* Description */}
-        <p className="text-[13px] text-[#475569] leading-[1.65] mb-8">
+        <p className="text-[14px] text-[#475569] leading-[1.65] mb-8">
           {product.description}
         </p>
       </div>
@@ -321,19 +321,20 @@ export default function Products() {
     <section
       ref={sectionRef}
       id="products"
-      className="relative py-32 lg:py-40 overflow-hidden"
+      aria-labelledby="products-title"
+      className="relative py-[60px] px-5 md:py-32 lg:py-40 md:px-0 overflow-hidden"
       style={{ backgroundColor: '#080D14' }}
     >
       {/* Subtle background noise */}
       <div className="absolute inset-0 opacity-[0.015] bg-[radial-gradient(#ffffff_1px,transparent_1px)] [background-size:16px_16px] pointer-events-none" />
 
-      <div className="relative z-10 max-w-[1200px] mx-auto px-4 md:px-6 lg:px-10">
+      <div className="relative z-10 max-w-[1200px] mx-auto px-0 md:px-6 lg:px-[max(16px,4vw)]">
         {/* SECTION HEADER */}
         <div className="mb-20 text-center flex flex-col items-center">
-          <span className="text-[11px] tracking-[0.18em] uppercase text-[#3B82F6] font-mono font-semibold mb-4">
+          <span className="text-[11px] tracking-[0.1em] md:tracking-[0.18em] uppercase text-[#3B82F6] font-mono font-semibold mb-4">
             AI Products Suite
           </span>
-          <h2 className="text-[32px] font-semibold text-[#F1F5F9] mb-6">
+          <h2 id="products-title" className="text-[clamp(22px,5vw,36px)] font-semibold text-[#F1F5F9] mb-6">
             Intelligence, built to ship
           </h2>
           <p className="text-[#64748B] text-[14px] leading-relaxed max-w-[420px]">

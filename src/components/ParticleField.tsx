@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 
 interface ParticleFieldProps {
@@ -6,37 +6,22 @@ interface ParticleFieldProps {
 }
 
 export default function ParticleField({ className }: ParticleFieldProps) {
+  // Mobile and prefers-reduced-motion system detection (Prompt optimizations)
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+  const prefersReducedMotion = typeof window !== 'undefined'
+    && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  const shouldDisable = isMobile || prefersReducedMotion;
+
   const containerRef = useRef<HTMLDivElement>(null);
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
   const sceneRef = useRef<THREE.Scene | null>(null);
   const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
-  const frameRef = useRef<number>(0);
   const mouseRef = useRef({ x: 0, y: 0, targetX: 0, targetY: 0 });
 
-  const [isMobile, setIsMobile] = useState(false);
-  const [scrollY, setScrollY] = useState(0);
-
+  // WebGL THREE.js Animation Loop Setup (only enabled on desktop paths)
   useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-
-    const handleScroll = () => {
-      setScrollY(window.scrollY);
-    };
-    window.addEventListener('scroll', handleScroll, { passive: true });
-
-    return () => {
-      window.removeEventListener('resize', checkMobile);
-      window.removeEventListener('scroll', handleScroll);
-    };
-  }, []);
-
-  useEffect(() => {
-    // Disable WebGL animations completely on mobile to maximize battery and performance
-    if (isMobile) return;
+    if (shouldDisable) return;
 
     const container = containerRef.current;
     if (!container) return;
@@ -62,7 +47,11 @@ export default function ParticleField({ className }: ParticleFieldProps) {
     renderer.setSize(container.clientWidth, container.clientHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.setClearColor(0x050505, 1);
-    container.appendChild(renderer.domElement);
+
+    // Optimization: Add will-change: transform to the canvas DOM element
+    const canvasElement = renderer.domElement;
+    canvasElement.style.willChange = 'transform';
+    container.appendChild(canvasElement);
 
     // Create particles
     const particleCount = 1500;
@@ -137,7 +126,7 @@ export default function ParticleField({ className }: ParticleFieldProps) {
     pointLight.position.set(0, 0, 10);
     scene.add(pointLight);
 
-    // Animation loop
+    // Animation mouse tracking
     const onMouseMove = (e: MouseEvent) => {
       mouseRef.current.targetX = (e.clientX / window.innerWidth) * 2 - 1;
       mouseRef.current.targetY = -(e.clientY / window.innerHeight) * 2 + 1;
@@ -145,8 +134,10 @@ export default function ParticleField({ className }: ParticleFieldProps) {
     window.addEventListener('mousemove', onMouseMove);
 
     const clock = new THREE.Clock();
+    let renderRafId: number;
+
     const animate = () => {
-      frameRef.current = requestAnimationFrame(animate);
+      renderRafId = requestAnimationFrame(animate);
       const elapsed = clock.getElapsedTime();
 
       mouseRef.current.x += (mouseRef.current.targetX - mouseRef.current.x) * 0.05;
@@ -180,7 +171,7 @@ export default function ParticleField({ className }: ParticleFieldProps) {
     return () => {
       window.removeEventListener('mousemove', onMouseMove);
       window.removeEventListener('resize', onResize);
-      cancelAnimationFrame(frameRef.current);
+      cancelAnimationFrame(renderRafId);
       renderer.dispose();
       geometry.dispose();
       particleMaterial.dispose();
@@ -190,25 +181,34 @@ export default function ParticleField({ className }: ParticleFieldProps) {
         container.removeChild(renderer.domElement);
       }
     };
-  }, [isMobile]);
+  }, [shouldDisable]);
 
-  if (isMobile) {
+  if (shouldDisable) {
     return (
-      <div
-        className={className}
-        style={{
-          position: 'absolute',
-          inset: 0,
-          zIndex: 1,
-          overflow: 'hidden',
-          backgroundImage: 'url(/canvas-fallback.png)',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          opacity: 0.3,
-          transform: `translateY(${scrollY * 0.15}px)`,
-          transition: 'transform 0.1s ease-out',
-        }}
-      />
+      <>
+        {/* CSS Style Injection for float animations on hero text wrapper on mobile viewport */}
+        <style>{`
+          @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+          }
+          @media (max-width: 767px) {
+            .hero-left-content {
+              animation: float 6s ease-in-out infinite;
+            }
+          }
+        `}</style>
+        <div
+          className={className}
+          style={{
+            position: 'absolute',
+            inset: 0,
+            zIndex: 1,
+            overflow: 'hidden',
+            background: 'radial-gradient(ellipse at 30% 50%, #0A1E3D 0%, #080D14 70%)',
+          }}
+        />
+      </>
     );
   }
 

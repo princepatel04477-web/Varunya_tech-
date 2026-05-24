@@ -1,6 +1,8 @@
 import { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import AnimatedHeading from '@/components/AnimatedHeading';
+import StaggerParagraph from '@/components/StaggerParagraph';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -137,7 +139,8 @@ export default function Team() {
     <section
       ref={sectionRef}
       id="team"
-      className="relative py-32 lg:py-40 overflow-hidden"
+      aria-labelledby="team-title"
+      className="relative py-[60px] px-5 md:py-32 lg:py-40 md:px-0 overflow-hidden"
     >
       {/* Particle canvas */}
       <canvas
@@ -162,28 +165,31 @@ export default function Team() {
         }}
       />
 
-      <div className="relative z-10 max-w-[1200px] mx-auto px-6 lg:px-10">
+      <div className="relative z-10 max-w-[1200px] mx-auto px-0 md:px-6 lg:px-[max(16px,4vw)]">
         {/* Section Header */}
         <div ref={headingRef} className="text-center mb-20">
           <div className="flex items-center justify-center gap-3 mb-6">
             <div className="h-px w-12 bg-amber/50" />
-            <span className="text-xs tracking-[0.3em] uppercase text-amber font-mono">
+            <span className="text-xs tracking-[0.1em] md:tracking-[0.3em] uppercase text-amber font-mono">
               Leadership
             </span>
             <div className="h-px w-12 bg-amber/50" />
           </div>
-          <h2 className="font-display text-[clamp(2.5rem,5vw,5rem)] font-bold leading-[1] tracking-[-0.02em] text-soft-white mb-6">
-            THE PEOPLE BEHIND VARUNYA
-          </h2>
-          <p className="text-muted-foreground text-lg max-w-xl mx-auto">
-            Two founders. One vision. Building the next generation of intelligent technology.
-          </p>
+          <AnimatedHeading
+            id="team-title"
+            text="THE PEOPLE BEHIND VARUNYA"
+            className="text-[clamp(22px,5vw,36px)] font-bold leading-[1] tracking-[-0.02em] mb-6 justify-center"
+          />
+          <StaggerParagraph
+            text="Two founders. One vision. Building the next generation of intelligent technology."
+            className="text-lg max-w-xl mx-auto text-[#64748B]"
+          />
         </div>
 
         {/* Founder Cards */}
         <div
           ref={cardsRef}
-          className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-4xl mx-auto"
+          className="grid grid-cols-1 lg:grid-cols-2 gap-3 lg:gap-8 max-w-4xl mx-auto"
         >
           {founders.map((founder) => (
             <div
@@ -211,6 +217,7 @@ export default function Team() {
                   loading="lazy"
                   width={400}
                   height={400}
+                  sizes="(max-width: 768px) 100vw, 50vw"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-void via-void/20 to-transparent" />
 
@@ -233,9 +240,9 @@ export default function Team() {
               </div>
 
               {/* Info */}
-              <div className="p-6 lg:p-8">
+              <div className="p-5 lg:p-8">
                 <div
-                  className="text-[10px] tracking-[0.3em] uppercase font-mono mb-3"
+                  className="text-[10px] tracking-[0.1em] md:tracking-[0.3em] uppercase font-mono mb-3"
                   style={{ color: founder.accent }}
                 >
                   {founder.role}

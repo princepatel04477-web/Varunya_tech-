@@ -217,9 +217,11 @@ html, body, #root {
     font-size: 1.5rem !important;
     line-height: 1.35 !important;
   }
-  /* Force all standard layouts to exactly 16px padding on mobile screen sizes */
-  #hero, #services, #projects, #testimonials, #pricing, #products, #team, #contact {
-    padding-left: 16px !important;
-    padding-right: 16px !important;
+  /* Force all standard layouts to exactly 60px 20px padding on mobile screen sizes */
+  #hero, #services, #products, #digital-marketing, #projects, #testimonials, #tech-stack, #pricing, #team, #contact {
+    padding-top: 60px !important;
+    padding-bottom: 60px !important;
+    padding-left: 20px !important;
+    padding-right: 20px !important;
   }
 }

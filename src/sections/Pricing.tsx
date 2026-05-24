@@ -2,6 +2,8 @@ import { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useMagneticAnime } from '@/hooks/useMagneticAnime';
+import AnimatedHeading from '@/components/AnimatedHeading';
+import StaggerParagraph from '@/components/StaggerParagraph';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -111,38 +113,42 @@ export default function Pricing() {
     <section
       ref={sectionRef}
       id="pricing"
-      className="relative py-32 lg:py-40 overflow-hidden bg-void"
+      aria-labelledby="pricing-title"
+      className="relative py-[60px] px-5 md:py-32 lg:py-40 md:px-0 overflow-hidden bg-void"
     >
       {/* Dynamic Background Accent Orbs */}
       <div className="absolute -top-40 right-10 w-[600px] h-[600px] bg-gradient-to-br from-[#3B82F6]/5 to-transparent rounded-full blur-[120px] pointer-events-none" />
 
-      <div className="relative z-10 max-w-[1200px] mx-auto px-4 md:px-6 lg:px-10">
+      <div className="relative z-10 max-w-[1200px] mx-auto px-0 md:px-6 lg:px-[max(16px,4vw)]">
         {/* Section Header */}
         <div ref={headingRef} className="mb-20 text-center flex flex-col items-center">
           <div className="flex items-center gap-3 mb-6">
             <div className="h-px w-12 bg-cyan/50" />
-            <span className="text-xs tracking-[0.3em] uppercase text-cyan font-mono">
+            <span className="text-xs tracking-[0.1em] md:tracking-[0.3em] uppercase text-cyan font-mono">
               Pricing Options
             </span>
             <div className="h-px w-12 bg-cyan/50" />
           </div>
-          <h2 className="font-display text-[clamp(2.5rem,5vw,5rem)] font-bold leading-[1] tracking-[-0.02em] text-soft-white mb-6">
-            Value Packages
-          </h2>
-          <p className="text-muted-foreground text-lg max-w-xl">
-            Transparent starting packages built to establish premium perceived value and fit your project scope.
-          </p>
+          <AnimatedHeading
+            id="pricing-title"
+            text="Value Packages"
+            className="text-[clamp(22px,5vw,36px)] font-bold leading-[1] tracking-[-0.02em] mb-6 justify-center"
+          />
+          <StaggerParagraph
+            text="Transparent starting packages built to establish premium perceived value and fit your project scope."
+            className="text-lg max-w-xl text-[#64748B]"
+          />
         </div>
-
+ 
         {/* Pricing Cards Horizontal Layout */}
         <div
           ref={gridRef}
-          className="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch mb-12"
+          className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-8 items-stretch mb-12"
         >
           {plans.map((plan) => (
             <div
               key={plan.name}
-              className={`relative rounded-2xl p-8 flex flex-col justify-between hover-lift transition-all duration-500 ${
+              className={`relative rounded-2xl p-5 lg:p-8 flex flex-col justify-between hover-lift transition-all duration-500 ${
                 plan.isPopular
                   ? 'bg-gradient-to-b from-[#1E293B] to-[#0F172A] border border-[#3B82F6] shadow-[0_20px_50px_rgba(59,130,246,0.1)] hover:shadow-[0_20px_50px_rgba(59,130,246,0.2)]'
                   : 'bg-gradient-to-b from-white/[0.03] to-white/[0.01] border border-white/5 hover:border-white/10'
@@ -155,7 +161,7 @@ export default function Pricing() {
                   Most Popular
                 </div>
               )}
-
+ 
               {/* Card Upper Block */}
               <div>
                 <div className="mb-6">
@@ -166,7 +172,7 @@ export default function Pricing() {
                     {plan.label}
                   </p>
                 </div>
-
+ 
                 {/* Price Display */}
                 <div className="flex items-baseline gap-1 mb-8">
                   {plan.price !== "Custom" && (
@@ -176,7 +182,7 @@ export default function Pricing() {
                     {plan.price}
                   </span>
                 </div>
-
+ 
                 {/* Feature Checklist */}
                 <ul className="space-y-4 mb-10 border-t border-white/5 pt-6">
                   {plan.features.map((feature, index) => (
@@ -198,14 +204,14 @@ export default function Pricing() {
                   ))}
                 </ul>
               </div>
-
+ 
               {/* Call to Action Button */}
               <a
                 ref={plan.name === 'Growth' ? growthBtnRef : undefined}
                 href={plan.link}
                 target={plan.external ? "_blank" : undefined}
                 rel={plan.external ? "noopener noreferrer" : undefined}
-                className={`w-full text-center py-3.5 px-6 rounded-xl font-display text-xs tracking-[0.15em] font-bold uppercase transition-all duration-300 ${
+                className={`w-full min-h-[44px] flex items-center justify-center text-center py-3.5 px-6 rounded-xl font-display text-xs tracking-[0.1em] font-bold uppercase transition-all duration-300 ${
                   plan.isPopular
                     ? 'bg-[#3B82F6] hover:bg-[#2563EB] text-white hover:scale-[1.02] shadow-[0_0_20px_rgba(59,130,246,0.35)] hover:shadow-[0_0_30px_rgba(59,130,246,0.55)] active:scale-[0.98]'
                     : 'bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 text-soft-white hover:scale-[1.02] active:scale-[0.98]'

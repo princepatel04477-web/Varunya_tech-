@@ -72,7 +72,7 @@ export default function Footer() {
           </div>
 
           {/* Quick Links */}
-          <nav className="flex flex-wrap items-center justify-center gap-6 lg:gap-8">
+          <nav aria-label="Footer navigation" className="flex flex-wrap items-center justify-center gap-6 lg:gap-8">
             {navLinks.map((link) => (
               <a
                 key={link.label}
